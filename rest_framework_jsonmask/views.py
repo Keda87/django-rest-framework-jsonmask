@@ -37,15 +37,16 @@ class OptimizedQuerySetMixin(object):
         fields_name = getattr(settings, 'REST_FRAMEWORK_JSONMASK_FIELDS_NAME', constants.FIELDS_NAME)
         excludes_name = getattr(settings, 'REST_FRAMEWORK_JSONMASK_EXCLUDES_NAME', constants.EXCLUDES_NAME)
 
-        if fields_name in self.request.GET and excludes_name in self.request.GET:
-            raise exceptions.ParseError(
-                detail='Cannot provide both "%s" and "%s"' % (fields_name, excludes_name,)
-            )
+        if self.request is not None:
+            if fields_name in self.request.GET and excludes_name in self.request.GET:
+                raise exceptions.ParseError(
+                    detail='Cannot provide both "%s" and "%s"' % (fields_name, excludes_name,)
+                )
 
-        if fields_name in self.request.GET:
-            context['requested_fields'] = self.requested_fields
-        elif excludes_name in self.request.GET:
-            context['excluded_fields'] = self.excluded_fields
+            if fields_name in self.request.GET:
+                context['requested_fields'] = self.requested_fields
+            elif excludes_name in self.request.GET:
+                context['excluded_fields'] = self.excluded_fields
 
         return context
 
